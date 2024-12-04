@@ -34,7 +34,7 @@ function App() {
         <meta name="description" content="Schogolar provides a platform to help students and researchers easily access and understand academic content." />
         <meta property="og:title" content="Schogolar - Academic Assistance" />
         <meta property="og:description" content="Schogolar offers insightful tools to help students and researchers enhance their academic learning and research." />
-        <meta property="og:image" content="./icons.svg" />
+        <meta property="og:image" content="https://raw.githubusercontent.com/rasperon/schogolar/main/assets/go.jpeg" />
         <meta property="og:url" content="https://schogolar.vercel.app" />
       </Helmet>
 
