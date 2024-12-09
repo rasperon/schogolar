@@ -69,7 +69,7 @@ function App() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               Schgolar
             </h1>
-            <p className="mt-3 text-gray-400">Interact with the API using natural language</p>
+            <p className="mt-3 text-gray-400">Provides a platform to help students and researchers easily access and understand academic content</p>
           </div>
           
           <motion.div 
