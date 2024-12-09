@@ -67,7 +67,7 @@ function App() {
               <Sparkles className="w-6 h-6 text-blue-400" />
             </motion.div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-              Schgolar API Interface
+              Schgolar
             </h1>
             <p className="mt-3 text-gray-400">Interact with the API using natural language</p>
           </div>
