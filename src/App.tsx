@@ -1,61 +1,112 @@
-import React, { useState } from 'react';
-import { ApiRequest, ApiEndpoint, ApiResponse } from './types/api';
-import { fetchApiResponse } from './utils/api';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+import { Sparkles } from 'lucide-react';
+import { ApiEndpointSelector } from './components/ApiEndpointSelector';
+import { LanguageSelector } from './components/LanguageSelector';
 import { ApiForm } from './components/ApiForm';
 import { ResponseDisplay } from './components/ResponseDisplay';
-import { LoadingSpinner } from './components/LoadingSpinner';
-import { Footer } from './components/Footer';
-import { Brain } from 'lucide-react';
-import { Helmet } from 'react-helmet';  // React Helmet'i ekleyin
+import { ExamplePrompts } from './components/ExamplePrompts';
+import { fetchApiResponse, ApiEndpoint } from './lib/api';
+import { languages, getSystemLanguage, getRandomPromptSet } from './lib/languages';
 
 function App() {
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<ApiResponse>();
-  const [error, setError] = useState<string>();
+  const [endpoint, setEndpoint] = useState<ApiEndpoint>('academic');
+  const [language, setLanguage] = useState(getSystemLanguage());
+  const [isLoading, setIsLoading] = useState(false);
+  const [response, setResponse] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [examplePrompts, setExamplePrompts] = useState<string[]>([]);
 
-  const handleSubmit = async (request: ApiRequest, endpoint: ApiEndpoint) => {
-    setLoading(true);
-    setError(undefined);
-    
+  useEffect(() => {
+    setExamplePrompts(getRandomPromptSet());
+  }, []);
+
+  const handleSubmit = async (userId: string, message: string) => {
+    setIsLoading(true);
+    setError(null);
+    setResponse(null);
+
     try {
-      const result = await fetchApiResponse(endpoint, request);
-      setResponse(result);
+      const selectedLanguage = languages.find(lang => lang.code === language);
+      const languagePrompt = selectedLanguage?.prompt || languages[0].prompt;
+      const reply = await fetchApiResponse(endpoint, userId, message, languagePrompt);
+      setResponse(reply);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handlePromptSelect = (prompt: string) => {
+    const form = document.querySelector('form');
+    const textarea = form?.querySelector('textarea');
+    if (textarea) {
+      textarea.value = prompt;
+      textarea.dispatchEvent(new Event('change', { bubbles: true }));
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <Helmet>
-        <title>Schogolar - Learn, Explore, and Improve</title>  {/* Dinamik başlık */}
-        <meta name="description" content="Schogolar provides a platform to help students and researchers easily access and understand academic content." />
-        <meta property="og:title" content="Schogolar - Academic Assistance" />
-        <meta property="og:description" content="Schogolar offers insightful tools to help students and researchers enhance their academic learning and research." />
-        <meta property="og:image" content="./icons.svg" />
-        <meta property="og:url" content="https://schogolar.vercel.app" />
-      </Helmet>
-
-      <main className="flex-grow">
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-          <div className="flex items-center justify-center gap-3 mb-8 animate-fade-in">
-            <Brain className="w-8 h-8 text-blue-500 animate-pulse-slow" />
-            <h1 className="text-3xl font-bold text-center">Schogolar</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="container mx-auto px-4 py-12">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              className="inline-flex items-center justify-center p-2 mb-4 rounded-full bg-blue-500/10"
+            >
+              <Sparkles className="w-6 h-6 text-blue-400" />
+            </motion.div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              Schgolar API Interface
+            </h1>
+            <p className="mt-3 text-gray-400">Interact with the API using natural language</p>
           </div>
           
-          <div className="bg-gray-800 rounded-xl p-6 shadow-xl animate-fade-in">
-            <ApiForm onSubmit={handleSubmit} isLoading={loading} />
+          <motion.div 
+            className="space-y-8 backdrop-blur-lg bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="flex flex-col md:flex-row gap-6">
+              <ApiEndpointSelector
+                selectedEndpoint={endpoint}
+                onEndpointChange={setEndpoint}
+              />
+              
+              <LanguageSelector
+                selectedLanguage={language}
+                onLanguageChange={setLanguage}
+              />
+            </div>
             
-            {loading && <LoadingSpinner />}
+            <ApiForm
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+            />
             
-            <ResponseDisplay response={response} error={error} />
-          </div>
-        </div>
-      </main>
-      
-      <Footer />
+            <ResponseDisplay
+              response={response}
+              error={error}
+            />
+
+            <ExamplePrompts
+              prompts={examplePrompts}
+              onSelectPrompt={handlePromptSelect}
+            />
+          </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
