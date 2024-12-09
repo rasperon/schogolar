@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
 import { Sparkles } from 'lucide-react';
 import { ApiEndpointSelector } from './components/ApiEndpointSelector';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -9,6 +8,7 @@ import { ResponseDisplay } from './components/ResponseDisplay';
 import { ExamplePrompts } from './components/ExamplePrompts';
 import { fetchApiResponse, ApiEndpoint } from './lib/api';
 import { languages, getSystemLanguage, getRandomPromptSet } from './lib/languages';
+import { Footer } from './components/Footer';
 
 function App() {
   const [endpoint, setEndpoint] = useState<ApiEndpoint>('academic');
@@ -107,6 +107,7 @@ function App() {
           </motion.div>
         </motion.div>
       </div>
+      <Footer/>
     </div>
   );
 }
