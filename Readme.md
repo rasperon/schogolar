@@ -19,7 +19,7 @@ Schogolar is a platform designed to help students and researchers easily access 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/schogolar.git
+   git clone https://github.com/rasperon/schogolar.git
    ```
 
 2. Install dependencies:
